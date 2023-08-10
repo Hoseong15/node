@@ -50,8 +50,8 @@ app.post('/add', function (req, res) {
 
     db.collection('post').insertOne({ _id : 총게시물갯수 + 1, 제목 : req.body.title, 날짜 : req.body.date }, function (에러, 결과) {
       db.collection('counter').updateOne({name:'게시물갯수'},{ $inc: {totalPost:1} },function(에러, 결과){
-	if(에러){return console.log(에러)}
-        응답.send('전송완료');
+	      if(에러){return console.log(에러)}
+        res.send('전송완료');
       })
     })
 
@@ -66,4 +66,12 @@ app.get('/list', function(req,res) {
     console.log(결과)
     res.render('list.ejs', {posts : 결과});
   });
+});
+
+app.delete('/delete', function(요청, 응답){
+  요청.body._id = parseInt(요청.body._id)
+  db.collection('post').deleteOne(요청.body, function(에러, 결과){
+    console.log('삭제완료')
+  })
+  응답.send('삭제완료')
 });
