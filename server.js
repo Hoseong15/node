@@ -44,12 +44,19 @@ app.get('/beauty', (req,res) => {
 
 
 // 폼에 적은 데이터를 서버에 넣은 방법 // 
-app.post('/add', (req,res) => {
-  res.send('전송완료')
-  db.collection('post').insertOne({제목 : req.body.title, 날짜 : req.body.date},function() {
-    console.log('저장완료')
-  });
-});
+app.post('/add', function (req, res) {
+  db.collection('counter').findOne({name : '게시물갯수'}, function(에러, 결과){
+    var 총게시물갯수 = 결과.totalPost
+
+    db.collection('post').insertOne({ _id : 총게시물갯수 + 1, 제목 : req.body.title, 날짜 : req.body.date }, function (에러, 결과) {
+      db.collection('counter').updateOne({name:'게시물갯수'},{ $inc: {totalPost:1} },function(에러, 결과){
+	if(에러){return console.log(에러)}
+        응답.send('전송완료');
+      })
+    })
+
+  })
+})
 
 
 
