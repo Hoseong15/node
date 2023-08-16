@@ -3,7 +3,7 @@ const app = express();
 const bodyParser = require('body-parser')
 app.use(express.urlencoded({extended: true})) 
 app.set('view engine', 'ejs');
-
+app.use('/public', express.static('public'))
 
 
 //modoDb에 접속해서 데이터 넣기 // 
@@ -26,12 +26,13 @@ MongoClient.connect('mongodb+srv://dlsghtjd3982:Km7pQeNERFjRVtKi@cluster0.zbkhb5
 
 
 // 페이지 들어가게 하는법 //
-app.get('/', function(req,res) {
-  res.sendFile(__dirname + '/index.html')
-});
+
+app.get('/', function(req,res){
+  res.render('index.ejs')
+})
 
 app.get('/write', function(req,res) {
-  res.sendFile(__dirname + '/write.html')
+  res.render('write.ejs')
 });
 
 app.get('/pet', function(req, res) {
@@ -60,6 +61,7 @@ app.post('/add', function (req, res) {
 
 
 
+
 app.get('/list', function(req,res) {
 // 디비에 저장된 post라는 collection만의 모든 데이터를 꺼내주세요
   db.collection('post').find().toArray(function(에러, 결과){
@@ -75,3 +77,11 @@ app.delete('/delete', function(요청, 응답){
   })
   응답.send('삭제완료')
 });
+
+// detail로 접속하면 detail.ejs보여줌
+app.get('/detail/:id', function(요청,응답) {
+  db.collection('post').findOne({_id : parseInt(요청.params.id)},function(에러, 결과){
+    console.log(결과)
+    응답.render('detail.ejs', { data : 결과})
+  })
+})
